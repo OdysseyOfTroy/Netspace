@@ -1,4 +1,11 @@
-use std::io;
+use serde::{Deserialize, Serialize};
+use std::io::{self, BufReader};
+
+use serde_json::{self, to_writer};
+use std::fs::File;
+use std::io::Write;
+
+#[derive(Serialize, Deserialize)]
 struct Task {
     description: String,
     completed: bool,
@@ -13,7 +20,7 @@ impl Task {
     }
 }
 fn main() {
-    let mut tasks: Vec<Task> = Vec::new();
+    let mut tasks = load_tasks();
 
     loop {
         println!("-- To-Do List Menu --");
@@ -28,10 +35,14 @@ fn main() {
             "1" => {
                 let description = get_user_input("Enter a description: ");
                 tasks.push(Task::new(description));
+                save_tasks(&tasks);
                 println!("Task added!\n");
             }
             "2" => list_tasks(&tasks),
-            "3" => mark_task_as_complete(&mut tasks),
+            "3" => {
+                mark_task_as_complete(&mut tasks);
+                save_tasks(&tasks);
+            }
             "4" => break,
             _ => println!("Invalid choice, please try again. \n"),
         }
@@ -45,6 +56,21 @@ fn list_tasks(tasks: &Vec<Task>) {
         println!("{}: [{}] {}", index + 1, status, task.description);
     }
     println!("");
+}
+
+fn save_tasks(tasks: &Vec<Task>) {
+    let file = File::create("tasks.json").expect("could not create file.");
+    serde_json::to_writer(file, tasks).expect("could not write data to file.");
+    println!("Tasks saved successfully.\n");
+}
+
+fn load_tasks() -> Vec<Task> {
+    if let Ok(file) = File::open("tasks.json") {
+        let reader = BufReader::new(file);
+        serde_json::from_reader(reader).unwrap_or_else(|_| Vec::new())
+    } else {
+        Vec::new()
+    }
 }
 
 fn mark_task_as_complete(tasks: &mut Vec<Task>) {
