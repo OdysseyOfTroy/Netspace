@@ -44,6 +44,15 @@ pub fn mark_task_as_complete(tasks: &mut Vec<Task>) {
     };
 }
 
+pub fn edit_task(tasks: &mut Vec<Task>) {
+    list_tasks(&tasks);
+    if let Some(index) = get_task_index(tasks, "Enter the number of the task you wish to edit: ") {
+        let new_description = get_user_input("Enter the new description for the task: ");
+        tasks[index].description = new_description;
+        println!("Task {} updated\n", index + 1);
+    }
+}
+
 pub fn delete_task(tasks: &mut Vec<Task>) {
     list_tasks(tasks);
     if let Some(index) = get_task_index(tasks, "Enter the number of the task you wish to delete: ") {
