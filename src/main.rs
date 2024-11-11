@@ -1,24 +1,12 @@
-use serde::{Deserialize, Serialize};
+mod task;
+
+use task::Task;
 use std::io::{self, BufReader};
 
-use serde_json::{self, to_writer};
+use serde_json::{self};
 use std::fs::File;
-use std::io::Write;
 
-#[derive(Serialize, Deserialize)]
-struct Task {
-    description: String,
-    completed: bool,
-}
 
-impl Task {
-    fn new(description: String) -> Task {
-        Task {
-            description,
-            completed: false,
-        }
-    }
-}
 fn main() {
     let mut tasks = load_tasks();
 
