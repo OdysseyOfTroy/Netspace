@@ -4,7 +4,7 @@ mod cli;
 
 use task::Task;
 use storage::{save_tasks, load_tasks};
-use cli::{get_user_input, list_tasks, mark_task_as_complete};
+use cli::{get_user_input, list_tasks, mark_task_as_complete, delete_task};
 
 fn main() {
     let mut tasks = load_tasks();
@@ -14,7 +14,8 @@ fn main() {
         println!("1. Add a new task");
         println!("2. List all tasks");
         println!("3. Mark a task as complete");
-        println!("4. Exit");
+        println!("4. Delete a task");
+        println!("5. Exit");
 
         let choice = get_user_input("Enter your option: ");
 
@@ -30,7 +31,11 @@ fn main() {
                 mark_task_as_complete(&mut tasks);
                 save_tasks(&tasks);
             }
-            "4" => break,
+            "4" => {
+                delete_task(&mut tasks);
+                save_tasks(&tasks);
+            }
+            "5" => break,
             _ => println!("Invalid choice, please try again. \n"),
         }
     }
